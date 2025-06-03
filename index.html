@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PensiOlympics – Fit na je Pensionering</title>
+    <style>
+      body {
+        font-family: Verdana, sans-serif;
+        font-size: 20px;
+        background-color: #3326ac;
+        color: #000000;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #1768b9;
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 28px;
+      }
+
+      section {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: rgb(215, 241, 143);
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        color: #000000;
+        font-size: 22px;
+        margin-top: 30px;
+      }
+
+      .activity {
+        margin: 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .buttons {
+        margin-top: 8px;
+      }
+
+      button {
+        font-size: 18px;
+        padding: 10px 18px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .ja {
+        background-color: #4caf50;
+        color: white;
+      }
+      .nee {
+        background-color: #e53935;
+        color: white;
+      }
+
+      .resultaat {
+        margin-top: 5px;
+        color: #555;
+      }
+
+      .voortgang-container {
+        margin: 30px 0;
+        background: #eee;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .voortgang-balk {
+        height: 24px;
+        background-color: #000000;
+        width: 0%;
+        background-color: #169b21;
+        text-align: center;
+        line-height: 24px;
+      }
+
+      #samenvatting {
+        margin-top: 40px;
+        padding: 20px;
+        background-color: hwb(59 46% 9%);
+        border: 1px solid #abeb63;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PensiOlympics – Winnen na je Pensionering</h1>
+      <p>Ontdek welke activiteiten voor jou belangrijk zijn</p>
+    </header>
+
+    <section>
+      <div class="voortgang-container">
+        <div class="voortgang-balk" id="voortgang">0%</div>
+      </div>
+
+      <div id="activiteiten-container"></div>
+
+      <div id="samenvatting"></div>
+    </section>
+
+    <script>
+      const activiteiten = JSON.parse(`{
+      "Essentiële Dagelijkse Vaardigheden": [
+        "Sta op van een lage stoel zonder handen te gebruiken",
+        "Loop 5 trappen op zonder te stoppen",
+        "Stap een hoge stoep op zonder te wankelen",
+        "Wandel 100 meter over oneffen terrein zonder te struikelen",
+        "Sta stevig terwijl je een voorwerp van 5kg voor je uitstrekt"
+      ],
+      "Zelfstandigheid in het dagelijks leven": [
+        "Til een koffer van 10kg in het bagagevak van een vliegtuig",
+        "Haal een zware boodschappentas uit de kofferbak van de auto",
+        "Draag twee boodschappentassen van 5 kg voor 500m",
+        "Til een plantpot van 15 kg op en draag deze 20 meter",
+        "Breng vuilniszakken naar buiten zonder te slepen"
+      ],
+      "Evenwicht en Beweeglijkheid": [
+        "Balanceer 15 seconden op één been met gesloten ogen",
+        "Ga in hurkzit en sta weer op zonder steun",
+        "Stap in en uit een bad zonder steun",
+        "Wandel achteruit zonder balans te verliezen",
+        "Til een been hoog genoeg op om een fiets op te stappen"
+      ],
+      "Huishoudelijke Taken": [
+        "Maak een bed op zonder hulp",
+        "Strijk kleren zonder lage rugpijn",
+        "Stofzuigen",
+        "Het gras in je tuin maaien",
+        "Tuinieren snoeien en spitten"
+      ],
+      "Functionele Kracht": [
+        "Til een gietijzeren pan met één hand op",
+        "Open een stevige pot met beide handen",
+        "Duw een deur van 10 kg open zonder schokken",
+        "Draai een zware sleutel in een slot zonder moeite",
+        "Een fiets van een fietsdrager aftillen"
+      ],
+      "Actieve Levensstijl": [
+        "Wandel 10.000 stappen per dag",
+        "Wandel in de natuur voor minstens 1,5 uur",
+        "Honden uitlaten 30 minuten",
+        "Seks",
+        "Zelf eten koken"
+      ],
+      "Sociale en Recreatieve Activiteiten": [
+        "Kunnen voetballen met kleinkinderen",
+        "Jeu de boules kunnen spelen",
+        "30 minuten kunnen dansen (stijl)",
+        "18 holes golf kunnen spelen",
+        "30 minuten padel kunnen spelen"
+      ],
+      "Basis Fitnessvaardigheden": [
+        "20 bodyweight squats in één set",
+        "10 push-ups vanaf de knieën in één set",
+        "10 bicep curls met gewichten van 8kg",
+        "5 pull-ups",
+        "1 minuut ‘planken’ in perfecte houding"
+      ],
+      "Wandelen": [
+        "1 uur wandelen met 5km per uur over vlak terrein",
+        "2 uur wandelen met 5km per uur over vlak terrein",
+        "1 uur wandelen over heuvelachtig terrein",
+        "Een bergwandeling maken van 2 uur",
+        "een bergwandeling van meerdere uren kunnen maken"
+      ],
+      "Fietsen": [
+        "30 minuten fietsen op een stadsfiets met 15km per uur",
+        "60 minuten fietsen op een stadsfiets met 18km per uur",
+        "1,5 uur door heuvelachtig terrein kunnen fietsen met een sportieve fiets",
+        "2 uur kunnen fietsen op een racefiets met 24km/u gemiddeld",
+        "2 uur kunnen fietsen op een racefiets met 26km/u gemiddeld"
+      ],
+      "Zwemmen": [
+        "15 minuten schoolslag baantjes trekken",
+        "15 minuten borstcrawl baantjes trekken",
+        "Watertrappelen voor 5 minuten"
+      ],
+      "Roeien": [
+        "60 minuten met een ploeg vrienden kunnen roeien 12km",
+        "60 minuten in een skiff kunnen roeien 10km",
+        "Een roeitocht van minstens 40 km kunnen meedoen, 6 uur met rustpauzes"
+      ],
+      "Sportieve Uitdagingen": [
+        "75km kunnen fietsen met een sportieve fiets door de Zuid-Limburgse heuvels of de Ardennen",
+        "Een lange bergwandeling maken van minstens 4 uur",
+        "Een halve marathon kunnen rennen binnen 3 uur.",
+        "Een wedstrijd van 8 km in een 8+ kunnen roeien",
+        "Een kleinkind kunnen helpen met het verhuizen van een studentenkamer"
+      ]
+    }`);
+
+      const container = document.getElementById("activiteiten-container");
+      const samenvatting = document.getElementById("samenvatting");
+      let antwoorden = JSON.parse(
+        localStorage.getItem("pensioAnswers") || "{}"
+      );
+      let totaal = 0;
+      let beantwoord = Object.keys(antwoorden).length;
+
+      for (const categorie in activiteiten) {
+        const h2 = document.createElement("h2");
+        h2.textContent = categorie;
+        container.appendChild(h2);
+        activiteiten[categorie].forEach((activiteit, index) => {
+          totaal++;
+          const div = document.createElement("div");
+          div.className = "activity";
+          const p = document.createElement("p");
+          p.textContent = activiteit;
+          const result = document.createElement("div");
+          result.className = "resultaat";
+          const buttons = document.createElement("div");
+          buttons.className = "buttons";
+
+          ["Ja", "Nee"].forEach((keuze) => {
+            const btn = document.createElement("button");
+            btn.textContent = keuze;
+            btn.className = keuze.toLowerCase();
+            btn.onclick = () => {
+              antwoorden[activiteit] = keuze;
+              localStorage.setItem("pensioAnswers", JSON.stringify(antwoorden));
+              result.textContent = "Je keuze: " + keuze;
+              updateVoortgang();
+              toonSamenvatting();
+            };
+            buttons.appendChild(btn);
+          });
+
+          if (antwoorden[activiteit]) {
+            result.textContent = "Je keuze: " + antwoorden[activiteit];
+          }
+
+          div.appendChild(p);
+          div.appendChild(buttons);
+          div.appendChild(result);
+          container.appendChild(div);
+        });
+      }
+
+      function updateVoortgang() {
+        const voltooid = Object.keys(antwoorden).length;
+        const percentage = Math.round((voltooid / totaal) * 100);
+        const balk = document.getElementById("voortgang");
+        balk.style.width = percentage + "%";
+        balk.textContent = percentage + "%";
+      }
+
+      function toonSamenvatting() {
+        if (Object.keys(antwoorden).length === totaal) {
+          const belangrijk = Object.entries(antwoorden)
+            .filter(([_, keuze]) => keuze === "Ja")
+            .map(([activiteit]) => activiteit);
+          samenvatting.innerHTML = `<h3>Belangrijke Activiteiten voor Jou:</h3><ul>${belangrijk
+            .map((a) => `<li>${a}</li>`)
+            .join("")}</ul>`;
+        }
+      }
+
+      updateVoortgang();
+      toonSamenvatting();
+    </script>
+
+    <footer
+      style="
+        background-color: #e0f2f1;
+        padding: 30px;
+        text-align: center;
+        font-size: 18px;
+        margin-top: 50px;
+      "
+    >
+      <h2 style="color: #004d40">Handige links</h2>
+      <ul style="list-style: none; padding: 0">
+        <li>
+          <a
+            href="https://www.youtube.com/watch?v=m0GcZ24pK6k&t=6s"
+            style="color: #00695c; text-decoration: none"
+            >Hoe doe ik een squat?</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.youtube.com/watch?v=m_AkYHYSssI&t=4s"
+            style="color: #00695c; text-decoration: none"
+            >Hoe doe ik een Push-up vanaf mijn knieën?</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.youtube.com/watch?v=Nkl8WnH6tDU&t=64s"
+            style="color: #00695c; text-decoration: none"
+            >Hoe doe ik een Bicep curl?</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.youtube.com/watch?v=6zyx46Vpato"
+            style="color: #00695c; text-decoration: none"
+            >Hoe doe ik een Pull up?</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.youtube.com/watch?v=iE1qwPfg-as"
+            style="color: #00695c; text-decoration: none"
+            >Hoe kan ik een minuut lang Planken?</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.youtube.com/watch?v=szBc_FP8oLA"
+            style="color: #00695c; text-decoration: none"
+            >Hoe moet ik roeien?</a
+          >
+        </li>
+      </ul>
+      <p style="margin-top: 20px; font-size: 16px; color: #555">
+        &copy; 2025 PensiOlympics. Alle rechten voorbehouden.
+      </p>
+    </footer>
+  </body>
+</html>
